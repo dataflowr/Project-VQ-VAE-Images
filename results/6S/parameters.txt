@@ -1,0 +1,7 @@
+    default_batch_size = 32 # 32 instead of 128 specified in the paper
+    default_num_training_updates = 250 # 25K instead of 250K specified in the paper
+    default_num_hiddens = 128
+    default_num_residual_hiddens = 32 # 32 instead of 256 specified in the paper
+    default_num_residual_layers = 2
+
+	Delete the +0.5 in and out of make_grid and use normalize = True
