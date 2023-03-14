@@ -11,7 +11,7 @@ class StanfordCarsDataset(object):
             os.mkdir(path)
             
         datasets.StanfordCars(
-            root="../data/",
+            root=path,
             split="train",
             download = True,
             transform=transforms.Compose([
@@ -20,7 +20,7 @@ class StanfordCarsDataset(object):
             ])
                 )
         datasets.StanfordCars(
-            root="../data/",
+            root=path,
             split="test",
             download = True,
             transform=transforms.Compose([
@@ -28,7 +28,7 @@ class StanfordCarsDataset(object):
                 transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
             ])
         )
-
+        path = os.path.join(path, "stanford_cars/")
         # create temporary directory structure with class folders
         temp_path_train = os.path.join(path, "temp_train")
         temp_path_test = os.path.join(path, "temp_test")

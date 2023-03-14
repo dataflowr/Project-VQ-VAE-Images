@@ -58,6 +58,7 @@ if __name__ == "__main__":
     parser.add_argument('--model_name', nargs='?', default='model.pth', type=str, help='The file name of trained model')
     parser.add_argument('--original_images_name', nargs='?', default='original_images.png', type=str, help='The file name of the original images used in evaluation')
     parser.add_argument('--validation_images_name', nargs='?', default='validation_images.png', type=str, help='The file name of the reconstructed images used in evaluation')
+    parser.add_argument('--dataset_name', nargs='?', default=Configuration.default_dataset_name, type=str, help='The dataset to use')
     args = parser.parse_args()
 
     # Dataset and model hyperparameters
@@ -74,7 +75,14 @@ if __name__ == "__main__":
     
     dataset_path = '..' + os.sep + args.data_path
 
-    dataset = Cifar10Dataset(configuration.batch_size, dataset_path, configuration.shuffle_dataset) # Create an instance of CIFAR10 dataset
+    if configuration.dataset_name != "Cifar10":
+        print("We are using the StanfordCars Dataset!")
+        dataset = StanfordCarsDataset(configuration.batch_size, dataset_path, configuration.shuffle_dataset) # Create an instance of StanfordCars dataset
+        
+    else: 
+        print("We are using the Cifar10 Dataset!")
+        dataset = Cifar10Dataset(configuration.batch_size, dataset_path, configuration.shuffle_dataset) # Create an instance of CIFAR10 dataset
+        
     auto_encoder = AutoEncoder(device, configuration).to(device) # Create an AutoEncoder model using our GPU device
 
     optimizer = optim.Adam(auto_encoder.parameters(), lr=configuration.learning_rate, amsgrad=True) # Create an Adam optimizer instance
