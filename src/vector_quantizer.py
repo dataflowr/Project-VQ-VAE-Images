@@ -98,9 +98,10 @@ class VectorQuantizer(nn.Module):
             - 2 * torch.matmul(flat_input, self._embedding.weight.t()))
             
         # Encoding
-        encoding_indices = torch.argmin(distances, dim=1).unsqueeze(1)
-        encodings = torch.zeros(encoding_indices.shape[0], self._num_embeddings).to(self._device)
-        encodings.scatter_(1, encoding_indices, 1)
+        # encoding_indices = torch.argmin(distances, dim=1).unsqueeze(1)
+        # encodings = torch.zeros(encoding_indices.shape[0], self._num_embeddings).to(self._device)
+        # encodings.scatter_(1, encoding_indices, 1)
+        encodings = nn.Softmax(- distances, dim = 1).unsequeeze(1)
         
         # Quantize and unflatten
         quantized = torch.matmul(encodings, self._embedding.weight).view(input_shape)

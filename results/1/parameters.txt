@@ -1,0 +1,7 @@
+default_batch_size = 128 # 32 instead of 128 specified in the paper
+default_num_training_updates = 25000 # 25K instead of 250K specified in the paper
+default_num_hiddens = 128
+default_num_residual_hiddens = 32 # 32 instead of 256 specified in the paper
+default_num_residual_layers = 2
+
+npimg = (npimg - np.min(npimg))/(np.max(npimg) - np.min(npimg))

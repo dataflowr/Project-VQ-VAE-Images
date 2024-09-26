@@ -74,7 +74,7 @@ class Cifar10Dataset(object):
             pin_memory=True
         )
 
-        self._train_data_variance = np.var(self._training_data.train_data / 255.0)
+        self._train_data_variance = np.var(self._training_data.data / 255.0)
 
     @property
     def training_data(self):

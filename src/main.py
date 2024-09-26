@@ -27,9 +27,11 @@
 from auto_encoder import AutoEncoder
 from trainer import Trainer
 from evaluator import Evaluator
+from stanfordCars_dataset import StanfordCarsDataset
 from cifar10_dataset import Cifar10Dataset
 from configuration import Configuration
 
+import torchvision.datasets as datasets
 import torch
 import torch.optim as optim
 import os
@@ -50,19 +52,22 @@ if __name__ == "__main__":
     parser.add_argument('--learning_rate', nargs='?', default=Configuration.default_learning_rate, type=float, help='The learning rate of the optimizer during training updates')
     parser.add_argument('--use_kaiming_normal', nargs='?', default=Configuration.default_use_kaiming_normal, type=bool, help='Use the weight normalization proposed in [He, K et al., 2015]')
     parser.add_argument('--unshuffle_dataset', default=not Configuration.default_shuffle_dataset, action='store_true', help='Do not shuffle the dataset before training')
-    parser.add_argument('--data_path', nargs='?', default='data', type=str, help='The path of the data directory')
-    parser.add_argument('--results_path', nargs='?', default='results', type=str, help='The path of the results directory')
+    parser.add_argument('--data_path', nargs='?', default='data/', type=str, help='The path of the data directory')
+    parser.add_argument('--results_path', nargs='?', default='results/', type=str, help='The path of the results directory')
     parser.add_argument('--loss_plot_name', nargs='?', default='loss.png', type=str, help='The file name of the training loss plot')
     parser.add_argument('--model_name', nargs='?', default='model.pth', type=str, help='The file name of trained model')
     parser.add_argument('--original_images_name', nargs='?', default='original_images.png', type=str, help='The file name of the original images used in evaluation')
     parser.add_argument('--validation_images_name', nargs='?', default='validation_images.png', type=str, help='The file name of the reconstructed images used in evaluation')
+    parser.add_argument('--dataset_name', nargs='?', default=Configuration.default_dataset_name, type=str, help='The dataset to use')
     args = parser.parse_args()
 
     # Dataset and model hyperparameters
     configuration = Configuration.build_from_args(args)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') # Use GPU if cuda is available
-
+    
+    print("GPU is available: ", torch.cuda.is_available())
+    
     # Set the result path and create the directory if it doesn't exist
     results_path = '..' + os.sep + args.results_path
     if not os.path.isdir(results_path):
@@ -70,7 +75,14 @@ if __name__ == "__main__":
     
     dataset_path = '..' + os.sep + args.data_path
 
-    dataset = Cifar10Dataset(configuration.batch_size, dataset_path, configuration.shuffle_dataset) # Create an instance of CIFAR10 dataset
+    if configuration.dataset_name != "Cifar10":
+        print("We are using the StanfordCars Dataset!")
+        dataset = StanfordCarsDataset(configuration.batch_size, dataset_path, configuration.shuffle_dataset) # Create an instance of StanfordCars dataset
+        
+    else: 
+        print("We are using the Cifar10 Dataset!")
+        dataset = Cifar10Dataset(configuration.batch_size, dataset_path, configuration.shuffle_dataset) # Create an instance of CIFAR10 dataset
+        
     auto_encoder = AutoEncoder(device, configuration).to(device) # Create an AutoEncoder model using our GPU device
 
     optimizer = optim.Adam(auto_encoder.parameters(), lr=configuration.learning_rate, amsgrad=True) # Create an Adam optimizer instance
